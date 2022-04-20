@@ -1,5 +1,5 @@
 {
-  "name": "envy",
+  "name": "@envy-as/cli",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -27,5 +27,8 @@
     "glob": "^7.2.0",
     "glob-promise": "^4.2.2",
     "kleur": "^4.1.4"
+  },
+  "bin": {
+    "envy": "./bin/envy.js"
   }
 }
