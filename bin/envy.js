@@ -3,7 +3,7 @@ import { spawn } from "child_process";
 import { URL } from "url";
 import path from "path";
 import { performance } from "perf_hooks";
-import { green } from "kleur";
+import { green } from "kleur/colors";
 
 const binLocation = import.meta.url;
 const parsedBinLocation = new URL(binLocation);
