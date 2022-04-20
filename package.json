@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "run-s test-cli",
-    "test-cli": "node lib/cli"
+    "test-cli": "node --experimental-wasi-unstable-preview1 --enable-source-maps lib/bootstrap"
   },
   "author": "",
   "license": "ISC",
