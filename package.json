@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "types": "assembly/index.d.ts",
+  "types": "assembly/global.d.ts",
   "scripts": {
     "start": "run-s test-cli",
     "test-cli": "node --experimental-wasi-unstable-preview1 --enable-source-maps lib/bootstrap"

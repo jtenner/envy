@@ -1,4 +1,4 @@
-/// <reference path="./index.d.ts" />
+/// <reference path="./global.d.ts" />
 import { fd_write } from "wasi";
 
 export function _startTests(): void {
