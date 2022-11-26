@@ -30,7 +30,7 @@ export async function cli() {
   // parse the cli args
   const parsedArgs = parseArgs(cliConfig);
   const asconfig = parsedArgs.values["asconfig"] as string;
-  const init = parsedArgs.values["init"] as boolean;
+  // const init = parsedArgs.values["init"] as boolean;
   const outputBinary = parsedArgs.values["output-binary"] as string;
   const globs = parsedArgs.positionals;
   const fileWrites = [] as Promise<any>[];
