@@ -1,0 +1,5 @@
+**/lib
+**/*.wasm
+**/*.wat
+**/node_modules
+**/build

@@ -1,0 +1,25 @@
+{
+  "name": "envy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jtenner/envy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jtenner/envy/issues"
+  },
+  "homepage": "https://github.com/jtenner/envy#readme",
+  "devDependencies": {
+    "assemblyscript": "^0.24.1",
+    "lerna": "^6.0.3",
+    "typescript": "^4.9.3"
+  }
+}
