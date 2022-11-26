@@ -4,5 +4,5 @@
     "outFile": "output.wasm",
     "textFile": "output.wat"
   },
-  "extends": "as-lunatic/asconfig.json"
+  "extends": "./asconfig.json"
 }
