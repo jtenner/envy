@@ -1,5 +1,5 @@
 import { wasi_Date } from "@assemblyscript/wasi-shim/assembly/wasi_date";
-import { Message, Maybe, Box, MaybeResolutionStatus, MaybeCallbackContext, MaybeResolution} from "as-lunatic/assembly";
+import { Message, Maybe, Box, MaybeResolutionStatus, MaybeCallbackContext, MaybeResolution} from "as-lunatic/assembly/index";
 import { VoidCallback, __envyAfterAll, __envyAfterEach, __envyBeforeAll, __envyBeforeEach, __envyLogs, __envyTestNodes, __envyTodos, __envyMaybeContext } from "./setup";
 
 export enum TestNodeType {
@@ -18,6 +18,7 @@ export class TestNodeResult {
   children: TestNodeResult[] = [];
 
   public constructor(
+    public name: string,
     public start: u64,
     public end: u64,
     public pass: bool,
@@ -72,9 +73,11 @@ export class TestNodeContext {
     ctx.beforeAll = node.beforeAll.slice();
     ctx.beforeEach = node.beforeEach.slice();
     ctx.callback = node.callback;
+    ctx.name = node.name;
     return ctx;
   }
 
+  name: string = "";
   afterAll: VoidCallback[] = [];
   afterEach: VoidCallback[] = [];
   beforeAll: VoidCallback[] = [];
@@ -92,6 +95,11 @@ function executeAll(callbacks: VoidCallback[]): void {
 export function completeTestNodeMaybe(node: TestNode): Maybe<TestNodeResult, TestNodeResult> {
   return Maybe.resolve<TestNodeContext, i32>(TestNodeContext.from(node))
     .then<TestNodeResult, TestNodeResult>((ctxBox: Box<TestNodeContext> | null, maybeCtx: MaybeCallbackContext<TestNodeResult, TestNodeResult>) => {
+      let node = ctxBox!.value;
+
+      // create the return value
+      let result = new TestNodeResult(node.name, 0, 0, true, [], [], null);
+
       // we want our custom assert function to work, so we need to do something with the maybeCtx the moment
       // we receive it
       __envyMaybeContext.value = maybeCtx;
@@ -103,14 +111,17 @@ export function completeTestNodeMaybe(node: TestNode): Maybe<TestNodeResult, Tes
       executeAll(ctx.beforeEach);
       
       // start the timer
-      let start = wasi_Date.now();
+      result.start = wasi_Date.now();
       ctx.callback();
-      let end = wasi_Date.now();
+      result.end = wasi_Date.now();
       // end the timer
 
       // execute all the after functions
       executeAll(ctx.afterEach);
       executeAll(ctx.afterAll);
+
+      result.logs = __envyLogs.slice();
+      result.todos = __envyTodos.slice();
 
       let maybes = new Array<Maybe<TestNodeResult, TestNodeResult>>();
 
@@ -127,8 +138,7 @@ export function completeTestNodeMaybe(node: TestNode): Maybe<TestNodeResult, Tes
         maybes.push(completeTestNodeMaybe(node));
       }
 
-      // create the return value
-      let result = new TestNodeResult(start, end, true, __envyLogs, __envyTodos, null);
+      // we need to collect the reuslts from the Maybes      
       result.collect(maybes);
 
       if (result.pass) {

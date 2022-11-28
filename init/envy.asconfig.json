@@ -1,8 +1,7 @@
 {
   "options": {
     "debug": true,
-    "outFile": "output.wasm",
-    "textFile": "output.wat"
+    "outFile": "output.wasm"
   },
   "extends": "./asconfig.json"
 }

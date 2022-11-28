@@ -1,6 +1,7 @@
 import { parseArgs, ParseArgsConfig } from "util";
-import { main as asc, DiagnosticMessage } from "assemblyscript/dist/asc";
-import { sync as glob } from "glob";
+import { main as asc, DiagnosticMessage } from "assemblyscript/dist/asc.js";
+import globPkg from "glob";
+const glob = globPkg.sync;
 import path from "path";
 import { promises as fs } from "fs";
 import { tmpdir } from "os";
@@ -51,19 +52,21 @@ export async function cli() {
 
   // for each entry point
   for (const entry of entrySet) {
-
-    asc(["--config", asconfig, entry], {
+    const output = await asc(["--config", asconfig, "--outFile", "output.wasm", entry], {
       reportDiagnostic(diagnostic) {
         diagnostics.push(diagnostic);
       },
-      stderr: process.stderr,
-      stdout: process.stdout,
-      readFile(filename, baseDir) {
+      async readFile(filename, baseDir) {
         const fileLocation = path.join(baseDir, filename);
+        console.log("trying", fileLocation);
         if (fileMap.has(fileLocation)) return fileMap.get(fileLocation)!;
-        const output = fs.readFile(fileLocation, "utf-8");
-        output.then(contents => fileMap.set(fileLocation, contents));
-        return output;
+        try {
+          const output = await fs.readFile(fileLocation, "utf-8");
+          fileMap.set(fileLocation, output);
+          return output;
+        } catch (ex) {
+          return null;
+        }
       },
       listFiles(dirname, baseDir) {
         const dirLocation = path.join(baseDir, dirname);
@@ -72,7 +75,7 @@ export async function cli() {
       writeFile(filename, contents, baseDir) {
         const fileLocation = path.join(filename, baseDir);
         const extension = path.extname(fileLocation);
-  
+        console.log("writing file", fileLocation);
         // if we are the wasm file, we check to see if we output the binary to the directory
         if (extension === ".wasm") {
           if (outputBinary) {
@@ -89,15 +92,21 @@ export async function cli() {
         }
       },
     });
+    console.log(output.error);
+    console.log(output.stats);
+    console.log(output.stderr.toString());
   }
-
+  
+  console.log("awaiting the writing");
   // wait for all the files to be written before running lunatic
   await Promise.allSettled(fileWrites);
-
+  console.log("finished writing");
+  console.log("wasmFiles", wasmFiles);
   // run every test in lunatic
   let status = 0;
   // run every file in lunatic
   for (const wasmFile of wasmFiles) {
+    console.log("WasmFile:", wasmFile);
     const output = cp.spawnSync("lunatic", [wasmFile]);
     status |= (output.status ?? 0);
   }
@@ -107,7 +116,7 @@ export async function cli() {
     process.exitCode = 1;
   }
 
-  await fs.unlink(tempDirectory);
+  // await fs.unlink(tempDirectory);
 }
 
 cli();

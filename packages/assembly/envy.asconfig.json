@@ -1,6 +1,0 @@
-{
-  "options": {
-    "use": ["assert=__envyAssert"]
-  },
-  "entries": ["./assembly/entry.ts"]
-}

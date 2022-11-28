@@ -19,5 +19,5 @@
   "options": {
     "bindings": "raw"
   },
-  "extends": "@as-lunatic/asconfig.json"
+  "extends": "./node_modules/as-lunatic/asconfig.json"
 }

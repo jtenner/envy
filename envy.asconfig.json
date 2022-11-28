@@ -1,0 +1,7 @@
+{
+  "options": {
+    "use": ["assert=__envyAssert"]
+  },
+  "entries": ["./assembly/entry.ts"],
+  "extends": "./asconfig.json"
+}
